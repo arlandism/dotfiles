@@ -55,16 +55,16 @@ plugins=(git)
 # User configuration
 
 export PATH="$PATH:$HOME/bin"
-export PATH="$PATH:$HOME/.rvm/gems/ruby-2.0.0-p598/bin"
 export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin"
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 export PATH="$PATH:$HOME/Library/Python/2.7/bin"
 export PATH="$PATH:$HOME/usr/local/lib/python2.7/site-packages"
-export PATH="$PATH:/usr/local/smlnj/bin" # SML
+export PATH="$PATH:$HOME/Library/Python/3.7/bin/" #TODO: my python config is a MESS. i'm dumping in 2 different versions' binaries
 export PYTHONPATH=/usr/local/lib/python2.7/site-packages
+export GOPATH="$HOME/go"
+export PATH="$PATH:$GOPATH/bin"
 # export MANPATH="/usr/local/man:$MANPATH"
 export NODE_ENV=development
-export PATH=$PATH:$(go env GOPATH)/bin
+#export PATH=$PATH:$(go env GOPATH)/bin
 
 source $ZSH/oh-my-zsh.sh
 
@@ -73,10 +73,21 @@ source $ZSH/oh-my-zsh.sh
 
 # Use manually installed vim
 alias vi='/usr/local/bin/vim'
-alias vim='/usr/local/bin/vim'
+
+# local branches only
+function delete-stale-branches() {
+  for branch in $(git --no-pager branch --no-color --merged);
+  do
+# TODO: figure out the if
+#    if [ $branch -ne "* master" ]
+#    then
+      git branch -d $branch;
+#    fi
+  done
+}
+
 # Preferred editor for local and remote sessions
 export EDITOR='vim'
-export ANSIBLE_VAULT_PASS=`cat ~/.ansible/hireology_vault`
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
 # else
@@ -101,14 +112,24 @@ alias be="bundle exec"
 alias gdc="git diff --cached"
 alias gpo="git pull origin"
 alias hgrep="history | grep $1"
-export NVM_DIR="/Users/arlandis/.nvm"
+alias assume-prod-role="aws-vault exec prod --debug --assume-role-ttl=1h"
+alias filediff="git diff $1 --name-only"
+# using 'n' instead of nvm
+#export NVM_DIR="/Users/arlandis/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-
 [[ -s "/Users/arlandis/.gvm/scripts/gvm" ]] && source "/Users/arlandis/.gvm/scripts/gvm"
 
-export PATH="$PATH:$HOME/dev/go/bin:$GOPATH/bin"
-export GOPATH="$HOME/dev/go:$GOPATH"
-export PATH=$PATH:usr/local/opt/go/libexec/bin
+#export PATH="$PATH:$HOME/dev/go/bin:$GOPATH/bin"
+#export PATH=$PATH:usr/local/opt/go/libexec/bin
+
+export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+export PATH="/usr/local/opt/libxml2/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
+export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+eval "$(rbenv init -)"
